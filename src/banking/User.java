@@ -24,10 +24,11 @@ public class User{
         this.name=name;
         this.address=address;
         this.age=age;
+        this.idGenerator();
     }
 
     public void apply(){
-        if(this.credit.equals("true")){
+        if(this.credit().equals("true")){
             try{
                 String filepath = FilePath.userInfo;
                 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -36,20 +37,16 @@ public class User{
 
                 Node bank = doc.getFirstChild();
 
-                Node user = doc.getElementsByTagName("user").item(0);
-                NamedNodeMap attr = user.getAttributes();
-                Node nodeAttr = attr.getNamedItem("id");
-                nodeAttr.setTextContent("0002");
-                
-                NodeList list = user.getChildNodes();
-                for (int i = 0; i < list.getLength(); i++){
-                    Node node = list.item(i);
-                    if ("juniorAccount".equals(node.getNodeName())) {
-                        NamedNodeMap jacc_attr = node.getAttributes();
-                        Node jacc_attr_id = jacc_attr.getNamedItem("accNo");
-                        jacc_attr_id.setTextContent("0002j");
-                    }
-                }
+                Element user = doc.createElement("user");
+
+                user.setAttribute("id", this.id);
+                user.setAttribute("name", this.name);
+                user.setAttribute("address", this.address);
+                user.setAttribute("age", this.age);
+                user.setAttribute("credit", this.credit);
+
+                bank.appendChild(user);
+
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
                 Transformer transformer = transformerFactory.newTransformer();
                 DOMSource source = new DOMSource(doc);
@@ -73,8 +70,25 @@ public class User{
         return this.credit="true";
     }
     
-    public static void main(String[] arg) {
-    	User user=new User();
-    	user.apply();
+    public void idGenerator() {
+        try{
+            int k=1;
+            String filepath = FilePath.userInfo;
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            Document doc = docBuilder.parse(filepath);
+
+            Node bank=doc.getFirstChild();
+            NodeList list= bank.getChildNodes();
+
+            for(int i=0;i<list.getLength();i++){
+                Node node=list.item(i);
+                if ("user".equals(node.getNodeName())) k++;
+            }
+            this.id=String.format("%04d", k);
+        }
+    	catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
