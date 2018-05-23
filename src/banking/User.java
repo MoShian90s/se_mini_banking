@@ -45,6 +45,7 @@ public class User{
                 user.setAttribute("age", this.age);
                 user.setAttribute("credit", this.credit);
 
+                bank.appendChild(doc.createTextNode("    "));
                 bank.appendChild(user);
 
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
