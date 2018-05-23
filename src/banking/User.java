@@ -20,6 +20,8 @@ public class User{
     String age;
     String credit;
 
+    public User(){}
+
     public User(String name,String address,String age){
         this.name=name;
         this.address=address;
@@ -92,4 +94,28 @@ public class User{
             e.printStackTrace();
         }
     }
+
+    public void search_user(String userId) {
+		try{
+			File file = new File("FilePath.userInfo");
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(file);
+
+			NodeList list=doc.getElementsByTagName("user");
+			
+			for(int i=0;i<list.getLength();i++){
+				Element user=(Element)list.item(i);
+				if(user.getAttribute("id").equals(userId)){
+                    this.name=user.getAttribute("name");
+                    this.address=user.getAttribute("address");
+                    this.age=user.getAttribute("age");
+                    this.credit=user.getAttribute("credit");
+				}
+            }
+            
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

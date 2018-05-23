@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<bank>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><bank>
     <user address="Beijing" age="18" credit="true" id="0001" name="Andy">
         <currentAccount accNo="0001c">
             <balance>1000.0</balance>
@@ -11,11 +10,5 @@
         <saverAccount accNo="0001s">
         </saverAccount>
             <balance>1000.0</balance>
-    </user>
-    <user address="UK" age="19" credit="true" id="0002" name="Any">
-        <currentAccount accNo="0002c">
-            <balance>0.00</balance>
-            <overdraft>500.00</overdraft>
-        </currentAccount>
     </user>
 </bank>
