@@ -30,6 +30,7 @@ public class Bank {
 					if(type==1){
 						Element cAcc = doc.createElement("currentAccount");
 						cAcc.setAttribute("accNo", user.id+"c");
+						cAcc.setAttribute("state","true");
 						aimed_user.appendChild(doc.createTextNode("\n        "));
 						aimed_user.appendChild(cAcc);
 
@@ -46,8 +47,42 @@ public class Bank {
 						cAcc.appendChild(doc.createTextNode("\n        "));
 						aimed_user.appendChild(doc.createTextNode("\n    "));
 						break;
+					}else if(type==2){
+						if(Integer.parseInt(user.age)>=16){
+							Element cAcc = doc.createElement("currentAccount");
+							cAcc.setAttribute("accNo", user.id+"j");
+							cAcc.setAttribute("state","true");
+							aimed_user.appendChild(doc.createTextNode("\n        "));
+							aimed_user.appendChild(cAcc);
+
+							Element cbalance = doc.createElement("balance");
+							cbalance.appendChild(doc.createTextNode("0.00"));
+							cAcc.appendChild(doc.createTextNode("\n            "));
+							cAcc.appendChild(cbalance);
+
+							cAcc.appendChild(doc.createTextNode("\n        "));
+							aimed_user.appendChild(doc.createTextNode("\n    "));
+							break;
+						}else{
+							System.out.println(":( dennied for age condition, sorry");
+						}							
+					}else if(type==3){
+						Element cAcc = doc.createElement("currentAccount");
+						cAcc.setAttribute("accNo", user.id+"s");
+						cAcc.setAttribute("state","true");
+						aimed_user.appendChild(doc.createTextNode("\n        "));
+						aimed_user.appendChild(cAcc);
+
+						Element cbalance = doc.createElement("balance");
+						cbalance.appendChild(doc.createTextNode("0.00"));
+						cAcc.appendChild(doc.createTextNode("\n            "));
+						cAcc.appendChild(cbalance);
+
+						cAcc.appendChild(doc.createTextNode("\n        "));
+						aimed_user.appendChild(doc.createTextNode("\n    "));						
 					}
 				}
+				
 			}
 			
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -77,7 +112,7 @@ public class Bank {
 			Document doc = docBuilder.parse(filepath);
 			
 			NodeList list= doc.getElementsByTagName("user");
-
+			
 			for(int i=0;i<list.getLength();i++){
 				Element aimed_user =(Element)list.item(i);
 				
@@ -123,7 +158,42 @@ public class Bank {
 					Element closedAcc = (Element) list.item(i);
 					if(closedAcc.getAttribute("accNo").equals(AccId)){
 						closedAcc.getParentNode().removeChild(closedAcc);
-					}	
+					}
+				}
+			}
+
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(new File(filepath));
+			transformer.transform(source, result);
+		}
+		catch (ParserConfigurationException pce) {
+			pce.printStackTrace();
+		} catch (TransformerException tfe) {
+			tfe.printStackTrace();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		} catch (SAXException sae) {
+			sae.printStackTrace();
+		}
+	}
+
+	public void suspend(String accNo){
+		try{
+			String filepath = FilePath.userInfo;
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document doc = docBuilder.parse(filepath);
+
+			NodeList list= doc.getElementsByTagName(judgeType(accNo));
+
+			for(int i=0;i<list.getLength();i++){
+				if(list.item(i).getNodeType()==Node.ELEMENT_NODE){
+					Element Acc = (Element) list.item(i);
+					if(Acc.getAttribute("accNo").equals(accNo)){
+						Acc.setAttribute("state", "false");
+					}
 				}
 			}
 
@@ -187,9 +257,12 @@ public class Bank {
 		}
 	}
 
-	public static void main(String[] arg){
-		Bank bank=new Bank();
-		bank.update();
-	}
+	public String judgeType (String accNo){
+		String re = null;
+		if(accNo.charAt(4)=='c') re = "currentAccount";
+		else if(accNo.charAt(4)=='j') re = "juniorAccount";
+		else if(accNo.charAt(4)=='s') re = "saverAccount";
 
+		return re;
+	}
 }
