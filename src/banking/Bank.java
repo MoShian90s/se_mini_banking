@@ -3,7 +3,10 @@ import files.FilePath;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.time.ZoneId;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -352,7 +355,7 @@ public class Bank {
 					localDateTime = localDateTime.minusDays(3);
 					Date letterDate = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 					
-					if(date1.compareTo(date2)==0){
+					if(date1.compareTo(date2)<0){
 						SaverAccount sacc=new SaverAccount(node.getAttribute("accNo"));
 						sacc.balance_modifier(Double.parseDouble(node.getTextContent()));
 						node.getParentNode().removeChild(node);
@@ -395,8 +398,26 @@ public class Bank {
 		return re;
 	}
 
+	public void autobot (){
+		Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 20); // 控制时
+        calendar.set(Calendar.MINUTE, 24);    // 控制分
+        calendar.set(Calendar.SECOND, 0);    // 控制秒
+     
+        Date time = calendar.getTime();
+     
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask(){
+			public void run(){
+				save_update();
+				cheque_update();
+				overdraft_update();
+			}
+		},time,1000*1000);
+	}
+
 	public static void main(String[] arg){
 		Bank bank=new Bank();
-		bank.save_update();
+		bank.autobot();
 	}
 }

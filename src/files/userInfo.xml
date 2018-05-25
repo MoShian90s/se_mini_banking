@@ -2,14 +2,14 @@
 <bank>
     <user address="Beijing" age="18" credit="true" id="0001" name="Andy">
         <currentAccount accNo="0001c" state="true">
-            <balance>4000.0</balance>
+            <balance>7000.0</balance>
             <overdraft>500.0</overdraft>
         </currentAccount>
         <juniorAccount accNo="0001j" state="true">
-            <balance>11000.0</balance>
+            <balance>21000.0</balance>
         </juniorAccount>
         <saverAccount accNo="0001s" state="true">
-            <balance>11000.0</balance>
+            <balance>21000.0</balance>
         </saverAccount>
     </user>
 </bank>
