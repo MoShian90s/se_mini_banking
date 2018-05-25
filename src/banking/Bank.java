@@ -1,5 +1,11 @@
 package banking;
 import files.FilePath;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.time.ZoneId;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -326,6 +332,60 @@ public class Bank {
 		return true;
 	}
 
+	public void save_update(){
+		try{
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			
+			String filepath = FilePath.userInfo;
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document doc = docBuilder.parse(filepath);
+
+			NodeList list=doc.getElementsByTagName("save");
+
+			for(int i=0;i<list.getLength();i++){
+				if(list.item(i).getNodeType()==Node.ELEMENT_NODE){
+					Element node=(Element)list.item(i);
+					Date date1 = formatter.parse(node.getAttribute("date"));
+					Date date2 = new Date();
+					LocalDateTime localDateTime = date2.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+					localDateTime = localDateTime.minusDays(3);
+					Date letterDate = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+					
+					if(date1.compareTo(date2)==0){
+						SaverAccount sacc=new SaverAccount(node.getAttribute("accNo"));
+						sacc.balance_modifier(Double.parseDouble(node.getTextContent()));
+						node.getParentNode().removeChild(node);
+					}
+					if(date1.compareTo(letterDate)==0){
+						System.out.println("a letter has been sent.");
+					}
+					if(date1.compareTo(letterDate)>0){
+						System.out.println("a letter has been sent.");
+					}
+				}
+			}
+
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");  
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(new File(filepath));
+			
+            transformer.transform(source, result);
+		} catch (ParserConfigurationException pce) {
+			pce.printStackTrace();
+		} catch (TransformerException tfe) {
+			tfe.printStackTrace();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		} catch (SAXException sae) {
+			sae.printStackTrace();
+		} catch (ParseException pae) {
+			pae.printStackTrace();
+		}
+	}
+
 	public String judgeType (String accNo){
 		String re = null;
 		if(accNo.charAt(4)=='c') re = "currentAccount";
@@ -337,6 +397,6 @@ public class Bank {
 
 	public static void main(String[] arg){
 		Bank bank=new Bank();
-		bank.cheque_update();
+		bank.save_update();
 	}
 }

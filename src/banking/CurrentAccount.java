@@ -163,9 +163,5 @@ public class CurrentAccount extends BankAccount {
 		}
 		return allowed;
 	}
-	
-	public static void main(String[] arg){
-		CurrentAccount acc=new CurrentAccount("0001c");
-		acc.withdraw(1000.0,2);
-	}
+
 }

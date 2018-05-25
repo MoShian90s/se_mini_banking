@@ -23,7 +23,7 @@ public class SaverAccount extends BankAccount {
 			Document doc = docBuilder.parse(filepath);
 			
 			NodeList list=doc.getElementsByTagName("saverAccount");
-
+			
 			for(int i=0;i<list.getLength();i++){
 				if(list.item(i).getNodeType()==Node.ELEMENT_NODE){
 					Element node=(Element)list.item(i);
@@ -51,11 +51,47 @@ public class SaverAccount extends BankAccount {
 		}
 	}
 
-	public void deposit(double amount,int type) {
-		if(type==1){
-			this.balance_modifier(amount);
-		} else if(type==2){
-			cheque_processor(amount);
+	public void deposit(double amount,int type,String date) {
+		try{
+			String filepath = FilePath.userInfo;
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document doc = docBuilder.parse(filepath);
+
+			NodeList list=doc.getElementsByTagName("saverAccount");
+			NodeList money_list=doc.getElementsByTagName("save");
+
+			for(int i=0;i<list.getLength();i++){
+				if(list.item(i).getNodeType()==Node.ELEMENT_NODE){
+					Element node=(Element)list.item(i);
+					if(node.getAttribute("accNo").equals(this.accNo)){
+						Element money=doc.createElement("save");
+						money.setAttribute("id", "s"+String.format("%04d", money_list.getLength()+1));
+						money.setAttribute("date", date);
+						money.setAttribute("accNo", this.accNo);
+						node.appendChild(doc.createTextNode("    "));
+						node.appendChild(money);
+						node.appendChild(doc.createTextNode("\n        "));
+						money.setTextContent(String.valueOf(amount));
+					}
+				}
+			}
+
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(new File(filepath));
+			
+            transformer.transform(source, result);
+		} catch (ParserConfigurationException pce) {
+			pce.printStackTrace();
+		} catch (TransformerException tfe) {
+			tfe.printStackTrace();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		} catch (SAXException sae) {
+			sae.printStackTrace();
 		}
 	}
 
@@ -158,5 +194,10 @@ public class SaverAccount extends BankAccount {
 					+ " unsuccessfull. Do not have enough available funds.");
 		}
 		return allowed;
+	}
+
+	public static void main(String[] arg){
+		SaverAccount save=new SaverAccount("0001s");
+		save.deposit(1000.0, 1, "01/05/2017");
 	}
 }
