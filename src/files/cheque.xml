@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><bank>
+    <cheque accNo="0001c" id="c0001" state="true">1000.0</cheque>
+    <cheque accNo="0001c" id="c0002" state="true">1000.0</cheque>
+    <cheque accNo="0001c" id="c0003" state="true">1000.0</cheque>
+    <cheque accNo="0001j" id="c0004" state="true">10000.0</cheque>
+    <cheque accNo="0001s" id="c0004" state="true">10000.0</cheque>
+</bank>

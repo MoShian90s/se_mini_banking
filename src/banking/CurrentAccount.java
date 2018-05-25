@@ -55,19 +55,22 @@ public class CurrentAccount extends BankAccount {
 		}
 	}
 
-	public void deposit(double amount) {
-		Double updated_balance = this.balance + amount;
-		this.balance_modifier(updated_balance);
+	public void deposit(double amount,int type) {
+		if(type==1){
+			this.balance_modifier(amount);
+		} else if(type==2){
+			cheque_processor(amount);
+		}
 	}
 
-	public void withdraw(double amount) {
+	public void withdraw(double amount,int type) {
 		Double updated_balance=this.balance-amount;
 		if(this.check(amount)) balance_modifier(updated_balance);
 	}
 
 	protected void balance_modifier(double amount){
 		try{
-			String update=String.valueOf(amount);
+			String update=String.valueOf(this.balance + amount);
 			String filepath = FilePath.userInfo;
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -114,6 +117,42 @@ public class CurrentAccount extends BankAccount {
 		}
 	}
 
+	public void cheque_processor(double amount){
+		try{
+			String filepath = FilePath.cheque;
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document doc = docBuilder.parse(filepath);
+
+			Element bank=(Element)doc.getFirstChild();
+
+			Element cheque=doc.createElement("cheque");
+			cheque.setAttribute("accNo", this.accNo);
+			cheque.setAttribute("id", "c"+String.format("%04d", doc.getElementsByTagName("cheque").getLength()+1));
+			cheque.setAttribute("state", "false");
+			bank.appendChild(doc.createTextNode("    "));
+			bank.appendChild(cheque);
+			cheque.appendChild(doc.createTextNode(String.valueOf(amount)));
+			
+			
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");  
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(new File(filepath));
+			
+            transformer.transform(source, result);
+		} catch (ParserConfigurationException pce) {
+			pce.printStackTrace();
+		} catch (TransformerException tfe) {
+			tfe.printStackTrace();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		} catch (SAXException sae) {
+			sae.printStackTrace();
+		}
+	}
+
 	protected boolean check(double amount) {
 		boolean allowed = false;
 		if (this.balance - amount >= -overdraftLimit) {
@@ -127,6 +166,6 @@ public class CurrentAccount extends BankAccount {
 	
 	public static void main(String[] arg){
 		CurrentAccount acc=new CurrentAccount("0001c");
-		acc.withdraw(1000.0);
+		acc.withdraw(1000.0,2);
 	}
 }

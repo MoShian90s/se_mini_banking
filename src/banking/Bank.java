@@ -49,7 +49,7 @@ public class Bank {
 						break;
 					}else if(type==2){
 						if(Integer.parseInt(user.age)>=16){
-							Element cAcc = doc.createElement("currentAccount");
+							Element cAcc = doc.createElement("juniorAccount");
 							cAcc.setAttribute("accNo", user.id+"j");
 							cAcc.setAttribute("state","true");
 							aimed_user.appendChild(doc.createTextNode("\n        "));
@@ -67,7 +67,7 @@ public class Bank {
 							System.out.println(":( dennied for age condition, sorry");
 						}							
 					}else if(type==3){
-						Element cAcc = doc.createElement("currentAccount");
+						Element cAcc = doc.createElement("saverAccount");
 						cAcc.setAttribute("accNo", user.id+"s");
 						cAcc.setAttribute("state","true");
 						aimed_user.appendChild(doc.createTextNode("\n        "));
@@ -119,6 +119,20 @@ public class Bank {
 				if(aimed_user.getAttribute("id").equals(userId)){
 					if(type==1){
 						NodeList closedAcc_list = aimed_user.getElementsByTagName("currentAccount");
+						for(int k=0;k<closedAcc_list.getLength();k++){
+							Node closedAcc = closedAcc_list.item(k);
+							aimed_user.removeChild(closedAcc);
+						}
+					}
+					if(type==2){
+						NodeList closedAcc_list = aimed_user.getElementsByTagName("juniorAccount");
+						for(int k=0;k<closedAcc_list.getLength();k++){
+							Node closedAcc = closedAcc_list.item(k);
+							aimed_user.removeChild(closedAcc);
+						}
+					}
+					if(type==3){
+						NodeList closedAcc_list = aimed_user.getElementsByTagName("saverAccount");
 						for(int k=0;k<closedAcc_list.getLength();k++){
 							Node closedAcc = closedAcc_list.item(k);
 							aimed_user.removeChild(closedAcc);
@@ -214,7 +228,7 @@ public class Bank {
 		}
 	}
 
-	public void update() {
+	public void overdraft_update() {
 		try{
 			Double balance=0.0,overdraft=0.0,sum=0.0;
 			int count=0;
@@ -257,6 +271,61 @@ public class Bank {
 		}
 	}
 
+	public void cheque_update(){
+		try{
+			String filepath = FilePath.cheque;
+			double cash=0.0;
+			String accNo=null;
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document doc = docBuilder.parse(filepath);
+		
+			NodeList list=doc.getElementsByTagName("cheque");
+
+			for(int i=0;i<list.getLength();i++){
+				if(list.item(i).getNodeType()==Node.ELEMENT_NODE){
+					Element node=(Element)list.item(i);
+					if(node.getAttribute("state").equals("false")){
+						if(cheque_credit(node.getAttribute("id"))){
+							cash=Double.parseDouble(node.getTextContent());
+							accNo=node.getAttribute("accNo");
+							if(judgeType(accNo).equals("currentAccount")){
+								CurrentAccount cacc=new CurrentAccount(accNo);
+								cacc.balance_modifier(cash);
+							}else if(judgeType(accNo).equals("juniorAccount")) {
+								JuniorAccount jacc=new JuniorAccount(accNo);
+								jacc.balance_modifier(cash);
+							}else if(judgeType(accNo).equals("saverAccount")){
+								SaverAccount sacc=new SaverAccount(accNo);
+								sacc.balance_modifier(cash);
+							}
+							node.setAttribute("state", "true");
+						}
+					}
+				}
+			}
+
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(new File(filepath));
+		
+			transformer.transform(source, result);
+		} catch (ParserConfigurationException pce) {
+			pce.printStackTrace();
+		} catch (TransformerException tfe) {
+			tfe.printStackTrace();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		} catch (SAXException sae) {
+			sae.printStackTrace();
+		}
+	}
+
+	public boolean cheque_credit(String accNo){
+		return true;
+	}
+
 	public String judgeType (String accNo){
 		String re = null;
 		if(accNo.charAt(4)=='c') re = "currentAccount";
@@ -264,5 +333,10 @@ public class Bank {
 		else if(accNo.charAt(4)=='s') re = "saverAccount";
 
 		return re;
+	}
+
+	public static void main(String[] arg){
+		Bank bank=new Bank();
+		bank.cheque_update();
 	}
 }

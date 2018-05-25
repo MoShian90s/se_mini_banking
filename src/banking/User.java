@@ -118,4 +118,8 @@ public class User{
 			e.printStackTrace();
 		}
 	}
+    public static void main(String[] arg) {
+    	User user=new User("lei","Beijing","18");
+    	user.apply();
+    }
 }
