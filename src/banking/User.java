@@ -3,6 +3,7 @@ import files.FilePath;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -52,6 +53,7 @@ public class User{
 
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
                 Transformer transformer = transformerFactory.newTransformer();
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes");  
                 DOMSource source = new DOMSource(doc);
                 StreamResult result = new StreamResult(new File(filepath));
                 transformer.transform(source, result);
@@ -95,29 +97,7 @@ public class User{
         }
     }
 
-    public void search_user(String userId) {
-		try{
-			File file = new File("FilePath.userInfo");
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(file);
-
-			NodeList list=doc.getElementsByTagName("user");
-			
-			for(int i=0;i<list.getLength();i++){
-				Element user=(Element)list.item(i);
-				if(user.getAttribute("id").equals(userId)){
-                    this.name=user.getAttribute("name");
-                    this.address=user.getAttribute("address");
-                    this.age=user.getAttribute("age");
-                    this.credit=user.getAttribute("credit");
-				}
-            }
-            
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    
     public static void main(String[] arg) {
     	User user=new User("lei","Beijing","18");
     	user.apply();

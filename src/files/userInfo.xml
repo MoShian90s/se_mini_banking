@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <bank>
     <user address="Beijing" age="18" credit="true" id="0001" name="Andy">
-        <currentAccount accNo="0001c" state="true">
-            <balance>7000.0</balance>
+        <currentAccount accNo="0001c" state="false">
+            <balance>10000.0</balance>
             <overdraft>500.0</overdraft>
         </currentAccount>
         <juniorAccount accNo="0001j" state="true">

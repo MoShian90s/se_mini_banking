@@ -265,11 +265,10 @@ public class Bank {
 				}
 				sum=overdraft+balance;
 				if(0>sum){
-					System.out.print("currentAccountID: " + check.getAttribute("accNo") + "\na message has been sent.");
 					break;
 				}
 			}
-			if(count==0)System.out.println("No account is overdraft");
+			if(count==0);
 
 		} catch (ParserConfigurationException pce) {
 			pce.printStackTrace();
@@ -361,10 +360,8 @@ public class Bank {
 						node.getParentNode().removeChild(node);
 					}
 					if(date1.compareTo(letterDate)==0){
-						System.out.println("a letter has been sent.");
 					}
 					if(date1.compareTo(letterDate)>0){
-						System.out.println("a letter has been sent.");
 					}
 				}
 			}
@@ -413,11 +410,13 @@ public class Bank {
 				cheque_update();
 				overdraft_update();
 			}
-		},time,1000*1000);
+		},time,1000*5);
 	}
 
 	public static void main(String[] arg){
 		Bank bank=new Bank();
-		bank.autobot();
+		User user=new User("any","bi","19");
+		user.apply();
+		bank.openAccount(user, 1);
 	}
 }

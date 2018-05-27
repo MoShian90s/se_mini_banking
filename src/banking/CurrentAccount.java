@@ -63,7 +63,7 @@ public class CurrentAccount extends BankAccount {
 		}
 	}
 
-	public void withdraw(double amount,int type) {
+	public void withdraw(double amount) {
 		Double updated_balance=this.balance-amount;
 		if(this.check(amount)) balance_modifier(updated_balance);
 	}
