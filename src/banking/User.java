@@ -13,7 +13,11 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.*;
 import java.io.*;
 import org.xml.sax.SAXException;
-
+/**
+ * Description: the operations of user
+ * @author yifan
+ * @version 1.0
+ */
 public class User{
     String id;
     String name;
@@ -22,14 +26,23 @@ public class User{
     String credit;
 
     public User(){}
-
+    /**
+     * the constructor of User
+     * @param name the name
+     * @param address the string address
+     * @param age the String age
+     * @see #idGenerator()
+     */
     public User(String name,String address,String age){
         this.name=name;
         this.address=address;
         this.age=age;
         this.idGenerator();
     }
-
+    /**
+     * the method to apply
+     * @see #credit()
+     */
     public void apply(){
         if(this.credit().equals("true")){
             try{
@@ -41,7 +54,7 @@ public class User{
                 Node bank = doc.getFirstChild();
 
                 Element user = doc.createElement("user");
-
+                
                 user.setAttribute("id", this.id);
                 user.setAttribute("name", this.name);
                 user.setAttribute("address", this.address);
@@ -57,7 +70,6 @@ public class User{
                 DOMSource source = new DOMSource(doc);
                 StreamResult result = new StreamResult(new File(filepath));
                 transformer.transform(source, result);
-
             }
             catch (ParserConfigurationException pce) {
                 pce.printStackTrace();
@@ -70,11 +82,17 @@ public class User{
             }
         }
     }
-
+    /**
+     * the credit agency
+     * @return String
+     */
     public String credit(){
         return this.credit="true";
     }
-    
+    /**
+     * the id generator
+     * @see #User(String, String, String)
+     */
     public void idGenerator() {
         try{
             int k=1;
@@ -95,11 +113,5 @@ public class User{
     	catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    
-    public static void main(String[] arg) {
-    	User user=new User("lei","Beijing","18");
-    	user.apply();
     }
 }

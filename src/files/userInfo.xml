@@ -1,15 +1,36 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<bank>
-    <user address="Beijing" age="18" credit="true" id="0001" name="Andy">
-        <currentAccount accNo="0001c" state="false">
-            <balance>10000.0</balance>
-            <overdraft>500.0</overdraft>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><bank>    <user address="bupt" age="19" credit="true" id="0001" name="yifan">
+        <currentAccount accNo="0001c" pin="0000" state="true">
+            <balance>12897.0</balance>
+            <overdraft>500.00</overdraft>
         </currentAccount>
-        <juniorAccount accNo="0001j" state="true">
-            <balance>21000.0</balance>
+    </user>
+    <user address="bupt" age="15" credit="true" id="0002" name="mzy">
+        <juniorAccount accNo="0002j" pin="1996" state="true">
+            <balance>11000.0</balance>
         </juniorAccount>
-        <saverAccount accNo="0001s" state="true">
-            <balance>21000.0</balance>
+    
+        <saverAccount accNo="0002s" pin="1996" state="true">
+            <balance>0.00</balance>
         </saverAccount>
+    </user>
+    <user address="bupt" age="19" credit="true" id="0003" name="yifan">
+        <saverAccount accNo="0003s" pin="1998" state="true">
+            <balance>0.00</balance>    
+            
+        </saverAccount>
+    </user>
+    <user address="0" age="0" credit="true" id="0004" name="0">
+        <saverAccount accNo="0004s" pin="0" state="true">
+            <balance>0.00</balance>
+            
+        </saverAccount>
+    </user>
+    <user address="bupt" age="18" credit="false" id="0005" name="yifan">
+        
+    
+        <currentAccount accNo="0005c" pin="1998" state="true">
+            <balance>10000.0</balance>
+            <overdraft>500.00</overdraft>
+        </currentAccount>
     </user>
 </bank>

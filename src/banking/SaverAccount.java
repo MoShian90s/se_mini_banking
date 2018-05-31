@@ -1,3 +1,4 @@
+
 package banking;
 import files.FilePath;
 import javax.xml.parsers.DocumentBuilder;
@@ -11,10 +12,19 @@ import org.w3c.dom.*;
 import java.io.*;
 
 import org.xml.sax.SAXException;
+/**
+ * SaverAccounts extends from the class BankAccount
+ * @author yifan 2015213364
+ * @version 1.0
+ */
 public class SaverAccount extends BankAccount {
-	
+	/**
+	 * the constructor of SaverAccount
+	 * @param accNo the account id of saver account
+	 */
 	public SaverAccount(String accNo) {
 		try{
+			int count=0;
 			this.accNo=accNo;
 			
 			String filepath = FilePath.userInfo;
@@ -23,12 +33,12 @@ public class SaverAccount extends BankAccount {
 			Document doc = docBuilder.parse(filepath);
 			
 			NodeList list=doc.getElementsByTagName("saverAccount");
-			
+
 			for(int i=0;i<list.getLength();i++){
 				if(list.item(i).getNodeType()==Node.ELEMENT_NODE){
 					Element node=(Element)list.item(i);
 					if(node.getAttribute("accNo").equals(this.accNo)){
-						
+						count++;
 						NodeList childs=node.getChildNodes();
 						for(int k=0;k<childs.getLength();k++){
 							
@@ -42,6 +52,9 @@ public class SaverAccount extends BankAccount {
 					}
 				}
 			}
+			if(count==0){
+				System.out.println("[ERROR] No such accNo");
+			}
 		}catch (ParserConfigurationException pce) {
 			pce.printStackTrace();
 		}catch (SAXException sae) {
@@ -50,7 +63,12 @@ public class SaverAccount extends BankAccount {
 			ioe.printStackTrace();
 		}
 	}
-
+	/**
+	 * the method saveraccount use to deposit
+	 * @param amount the money amount u operate
+	 * @param type the way u deposit
+	 * @param date the date u set to store the save information
+	 */
 	public void deposit(double amount,int type,String date) {
 		try{
 			String filepath = FilePath.userInfo;
@@ -73,6 +91,7 @@ public class SaverAccount extends BankAccount {
 						node.appendChild(money);
 						node.appendChild(doc.createTextNode("\n        "));
 						money.setTextContent(String.valueOf(amount));
+						System.out.println("[INFO] accNo: "+this.accNo+" . A new save of "+amount+" has been deposited");
 					}
 				}
 			}
@@ -94,110 +113,6 @@ public class SaverAccount extends BankAccount {
 			sae.printStackTrace();
 		}
 	}
+	
 
-	public void withdraw(double amount) {
-		Double updated_balance=this.balance-amount;
-		if(this.check(amount)) balance_modifier(updated_balance);
-	}
-
-	protected void balance_modifier(double amount){
-		try{
-			String update=String.valueOf(this.balance + amount);
-			String filepath = FilePath.userInfo;
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			Document doc = docBuilder.parse(filepath);
-			
-			NodeList list=doc.getElementsByTagName("saverAccount");
-			
-			for(int i=0;i<list.getLength();i++){
-				if(list.item(i).getNodeType()==Node.ELEMENT_NODE){
-					Element node=(Element)list.item(i);
-					if(node.getAttribute("accNo").equals(this.accNo)){
-						if(node.getAttribute("state").equals("true")){
-							NodeList childs=node.getChildNodes();
-							for(int k=0;k<childs.getLength();k++){
-								if(childs.item(k).getNodeType()==Node.ELEMENT_NODE) {
-									Element child_node=(Element)childs.item(k);
-									if(child_node.getTagName().equals("balance")){
-										
-										child_node.setTextContent(update);
-										this.balance=amount;
-									}
-								}
-							}								
-						}
-					}
-				}
-			}
-			
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");  
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(filepath));
-			
-            transformer.transform(source, result);
-		} catch (ParserConfigurationException pce) {
-			pce.printStackTrace();
-		} catch (TransformerException tfe) {
-			tfe.printStackTrace();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		} catch (SAXException sae) {
-			sae.printStackTrace();
-		}
-	}
-
-	public void cheque_processor(double amount){
-		try{
-			String filepath = FilePath.cheque;
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			Document doc = docBuilder.parse(filepath);
-
-			Element bank=(Element)doc.getFirstChild();
-
-			Element cheque=doc.createElement("cheque");
-			cheque.setAttribute("accNo", this.accNo);
-			cheque.setAttribute("id", "c"+String.format("%04d", doc.getElementsByTagName("cheque").getLength()+1));
-			cheque.setAttribute("state", "false");
-			bank.appendChild(doc.createTextNode("    "));
-			bank.appendChild(cheque);
-			cheque.appendChild(doc.createTextNode(String.valueOf(amount)));
-			
-			
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");  
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(filepath));
-			
-            transformer.transform(source, result);
-		} catch (ParserConfigurationException pce) {
-			pce.printStackTrace();
-		} catch (TransformerException tfe) {
-			tfe.printStackTrace();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		} catch (SAXException sae) {
-			sae.printStackTrace();
-		}
-	}
-
-    protected boolean check(double amount) {
-		boolean allowed = false;
-		if (this.balance - amount >= 0) {
-			allowed = true;
-		} else {
-			System.out.println("Withdraw " + amount
-					+ " unsuccessfull. Do not have enough available funds.");
-		}
-		return allowed;
-	}
-
-	public static void main(String[] arg){
-		SaverAccount save=new SaverAccount("0001s");
-		save.deposit(1000.0, 1, "01/05/2017");
-	}
 }
